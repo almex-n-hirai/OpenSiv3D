@@ -36,29 +36,16 @@ namespace s3d
 		// 非同期タスクのポーリング間隔
 		constexpr Milliseconds TaskPollingInterval{ 5 };
 
-
 		// 文字起こし API に送信するリクエストを作成する
 		[[nodiscard]]
-		static std::string MakeTransRequest(const StringView file, const StringView model = U"whisper-1")
+		static std::string MakeTransRequest(const StringView filePath)
 		{
-			JSON request;
-			if (file[0] != U'@')
-			{
-				String s(file);
-				s.insert(0, U"@");
-				request[U"file"] = s;
-			}
-			else
-			{
-				request[U"file"] = file;
-			}
-			request[U"model"] = model;
-			return request.formatUTF8();
+			return "file=\"@" + filePath.toUTF8() + "\" , model=" + OpenAI::Model::Whisper1.toUTF8();
 		}
 
 		// チャット API に送信するリクエストを作成する
 		[[nodiscard]]
-		static std::string MakeChatRequest(const Array<std::pair<String, String>>& messages, const StringView model, const StringView temperature = U"1.0")
+		static std::string MakeChatRequest(const Array<std::pair<String, String>>& messages, const StringView model, const double temperature)
 		{
 			JSON request;
 			request[U"model"] = model;
@@ -98,6 +85,15 @@ namespace s3d
 		{
 			return{
 				{ U"Content-Type", U"application/json" },
+				{ U"Authorization", (U"Bearer " + apiKey) },
+			};
+		}
+
+		[[nodiscard]]
+		static HashTable<String, String> MakeFileHeaders(const StringView apiKey)
+		{
+			return{
+				{ U"Content-Type", U"multipart/form-data" },
 				{ U"Authorization", (U"Bearer " + apiKey) },
 			};
 		}
@@ -234,7 +230,7 @@ namespace s3d
 	{
 		namespace Audio
 		{
-			AsyncHTTPTask TransAsync(const StringView apiKey, const StringView file, const StringView model)
+			AsyncHTTPTask TransAsync(const StringView apiKey, const StringView filePath)
 			{
 				// API キーが空の文字列である場合は失敗
 				if (apiKey.isEmpty())
@@ -242,9 +238,8 @@ namespace s3d
 					return{};
 				}
 
-				const std::string data = detail::MakeTransRequest(file, model);
-
-				const auto headers = detail::MakeHeaders(apiKey);
+				const std::string data = detail::MakeTransRequest(filePath);
+				const auto headers = detail::MakeFileHeaders(apiKey);
 
 				return SimpleHTTP::PostAsync(detail::AudioV1URL, headers, data.data(), data.size());
 			}
@@ -265,24 +260,24 @@ namespace s3d
 		}
 		namespace Chat
 		{
-			String Complete(const StringView apiKey, const StringView message, const StringView model, const StringView temperature)
+			String Complete(const StringView apiKey, const StringView message, const StringView model, const double temperature)
 			{
 				String unused;
 				return Complete(apiKey, { { U"user", String{ message } } }, unused, model, temperature);
 			}
 
-			String Complete(const StringView apiKey, const StringView message, String& error, const StringView model, const StringView temperature)
+			String Complete(const StringView apiKey, const StringView message, String& error, const StringView model, const double temperature)
 			{
 				return Complete(apiKey, { { U"user", String{ message } } }, error, model, temperature);
 			}
 
-			String Complete(StringView apiKey, const Array<std::pair<String, String>>& messages, const StringView model, const StringView temperature)
+			String Complete(StringView apiKey, const Array<std::pair<String, String>>& messages, const StringView model, const double temperature)
 			{
 				String unused;
 				return Complete(apiKey, messages, unused, model, temperature);
 			}
 
-			String Complete(StringView apiKey, const Array<std::pair<String, String>>& messages, String& error, const StringView model, const StringView temperature)
+			String Complete(StringView apiKey, const Array<std::pair<String, String>>& messages, String& error, const StringView model, const double temperature)
 			{
 				error.clear();
 
@@ -325,12 +320,12 @@ namespace s3d
 				return{};
 			}
 
-			AsyncHTTPTask CompleteAsync(const StringView apiKey, const StringView message, const StringView model, const StringView temperature)
+			AsyncHTTPTask CompleteAsync(const StringView apiKey, const StringView message, const StringView model, const double temperature)
 			{
 				return CompleteAsync(apiKey, { { U"user", String{ message } } }, model, temperature);
 			}
 
-			AsyncHTTPTask CompleteAsync(const StringView apiKey, const Array<std::pair<String, String>>& messages, const StringView model, const StringView temperature)
+			AsyncHTTPTask CompleteAsync(const StringView apiKey, const Array<std::pair<String, String>>& messages, const StringView model, const double temperature)
 			{
 				// API キーが空の文字列である場合は失敗
 				if (apiKey.isEmpty())

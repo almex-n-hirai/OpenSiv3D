@@ -85,7 +85,7 @@ namespace s3d
 		namespace Audio
 		{
 			[[nodiscard]]
-			AsyncHTTPTask TransAsync(const StringView apiKey, const StringView file, const StringView model = Model::Whisper1);
+			AsyncHTTPTask TransAsync(const StringView apiKey, const StringView filePath);
 			[[nodiscard]]
 			String GetContent(const JSON& response);
 		}
@@ -99,7 +99,7 @@ namespace s3d
 			/// @return 返答メッセージ。取得に失敗した場合は空の文字列 | Response message. An empty string if the retrieval fails.
 			/// @remark インターネットアクセスが必要です。 | Internet access is required.
 			[[nodiscard]]
-			String Complete(StringView apiKey, StringView message, StringView model = Model::GPT3_5_Turbo, const StringView temperature = U"1.0");
+			String Complete(StringView apiKey, StringView message, StringView model = Model::GPT3_5_Turbo, const double temperature = 1.0);
 
 			/// @brief ChatGPT にメッセージを送り、その返答メッセージを取得します。 | Sends a message to ChatGPT and retrieves the response message.
 			/// @param apiKey OpenAI API キー | OpenAI API key
@@ -109,7 +109,7 @@ namespace s3d
 			/// @return 返答メッセージ。取得に失敗した場合は空の文字列 | Response message. An empty string if the retrieval fails.
 			/// @remark インターネットアクセスが必要です。 | Internet access is required.
 			[[nodiscard]]
-			String Complete(StringView apiKey, StringView message, String& error, StringView model = Model::GPT3_5_Turbo, const StringView temperature = U"1.0");
+			String Complete(StringView apiKey, StringView message, String& error, StringView model = Model::GPT3_5_Turbo, const double temperature = 1.0);
 
 			/// @brief ChatGPT にメッセージを送り、その返答メッセージを取得します。 | Sends messages to ChatGPT and retrieves the response message.
 			/// @param apiKey OpenAI API キー | OpenAI API key
@@ -119,7 +119,7 @@ namespace s3d
 			/// @remark ロールは U"system", U"user", U"assistant" の 3 種類です。 | Roles are U"system", U"user", and U"assistant".
 			/// @remark インターネットアクセスが必要です。 | Internet access is required.
 			[[nodiscard]]
-			String Complete(StringView apiKey, const Array<std::pair<String, String>>& messages, StringView model = Model::GPT3_5_Turbo, const StringView temperature = U"1.0");
+			String Complete(StringView apiKey, const Array<std::pair<String, String>>& messages, StringView model = Model::GPT3_5_Turbo, const double temperature = 1.0);
 
 			/// @brief ChatGPT にメッセージを送り、その返答メッセージを取得します。 | Sends messages to ChatGPT and retrieves the response message.
 			/// @param apiKey OpenAI API キー | OpenAI API key
@@ -130,7 +130,7 @@ namespace s3d
 			/// @remark ロールは U"system", U"user", U"assistant" の 3 種類です。 | Roles are U"system", U"user", and U"assistant".
 			/// @remark インターネットアクセスが必要です。 | Internet access is required.
 			[[nodiscard]]
-			String Complete(StringView apiKey, const Array<std::pair<String, String>>& messages, String& error, StringView model = Model::GPT3_5_Turbo, const StringView temperature = U"1.0");
+			String Complete(StringView apiKey, const Array<std::pair<String, String>>& messages, String& error, StringView model = Model::GPT3_5_Turbo, const double temperature = 1.0);
 
 			/// @brief ChatGPT にメッセージを送り、レスポンス（JSON）を取得する非同期タスクを返します。 | Returns an asynchronous task for sending a message to ChatGPT and retrieving the response (JSON).
 			/// @param apiKey OpenAI API キー | OpenAI API key
@@ -140,7 +140,7 @@ namespace s3d
 			/// @remark 戻り値の task が `(task.isReady() == true) && (task.getResponse().isOK() == true)` になれば結果を取得できます。 | The result can be retrieved if `(task.isReady() == true) && (task.getResponse().isOK() == true)`.
 			/// @remark インターネットアクセスが必要です。 | Internet access is required.
 			[[nodiscard]]
-			AsyncHTTPTask CompleteAsync(StringView apiKey, StringView message, StringView model = Model::GPT3_5_Turbo, const StringView temperature = U"1.0");
+			AsyncHTTPTask CompleteAsync(StringView apiKey, StringView message, StringView model = Model::GPT3_5_Turbo, const double temperature = 1.0);
 
 			/// @brief ChatGPT にメッセージを送り、レスポンス（JSON）を取得する非同期タスクを返します。 | Returns an asynchronous task for sending messages to ChatGPT and retrieving the response (JSON).
 			/// @param apiKey OpenAI API キー | OpenAI API key
@@ -151,7 +151,7 @@ namespace s3d
 			/// @remark 戻り値の task が `(task.isReady() == true) && (task.getResponse().isOK() == true)` になれば結果を取得できます。 | The result can be retrieved if `(task.isReady() == true) && (task.getResponse().isOK() == true)`.
 			/// @remark インターネットアクセスが必要です。 | Internet access is required.
 			[[nodiscard]]
-			AsyncHTTPTask CompleteAsync(StringView apiKey, const Array<std::pair<String, String>>& messages, StringView model = Model::GPT3_5_Turbo, const StringView temperature = U"1.0");
+			AsyncHTTPTask CompleteAsync(StringView apiKey, const Array<std::pair<String, String>>& messages, StringView model = Model::GPT3_5_Turbo, const double temperature = 1.0);
 
 			/// @brief ChatGPT のレスポンス（JSON）から、返答メッセージを抽出して返します。 | Extracts and returns the response message from the ChatGPT response (JSON).
 			/// @param response JSON レスポンス | JSON response
